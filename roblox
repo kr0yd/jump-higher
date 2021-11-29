@@ -1,0 +1,57 @@
+----- LOAD HOOK API -----
+local Script = game:HttpGet('https://pastebin.com/raw/R5pzJpmv', true)
+getgenv().__debug = loadstring(Script)()
+-------------------------------
+
+local P = game:GetService('Players').LocalPlayer
+__debug.setwrite('Humanoid', 'JumpPower', false)
+
+
+__debug.set('Humanoid', 'JumpPower', function()
+    return 50
+end)
+
+local Char = P.Character or P.CharacterAdded:wait()
+local H = Char:WaitForChild('Humanoid')
+_G.JP = 55
+
+__debug.rawset(H, 'WalkSpeed', _G.WS)
+__debug.rawset(H, 'JumpPower', _G.JP)
+spawn(function()
+    while wait() do
+        if __debug.rawget(H, 'JumpPower') ~= _G.JP then
+            __debug.rawset(H, 'JumpPower', _G.JP)
+        end
+    end
+end)
+
+P.CharacterAdded:Connect(function(C)
+    local H = C:WaitForChild('Humanoid')
+    while wait() do
+        if __debug.rawget(H, 'JumpPower') ~= _G.JP then
+            __debug.rawset(H, 'JumpPower', _G.JP)
+        end
+    end
+end)
+
+
+local UserInputService = game:GetService("UserInputService")
+local localPlayer = game.Players.LocalPlayer
+local character
+local humanoid
+
+function onJumpRequest()
+    humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+end
+ 
+local function characterAdded(newCharacter)
+    character = newCharacter
+    humanoid = newCharacter:WaitForChild("Humanoid")
+end
+ 
+if localPlayer.Character then
+    characterAdded(localPlayer.Character)
+end
+ 
+localPlayer.CharacterAdded:connect(characterAdded)
+UserInputService.JumpRequest:connect(onJumpRequest)
